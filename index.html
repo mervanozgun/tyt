@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4c1d95"><meta name="description" content="TYT çalışma programı planlayıcı: net hedefine, konu durumuna ve sınav tarihine göre kişisel plan">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="TYT Plan"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>TYT Çalışma Planlayıcı</title>
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--ink:#1b2437;--mut:#6a7388;--line:#e6e9f2;--pri:#2951d6;--pri2:#1e3a8a;--ok:#12a36b;--sh:0 2px 10px rgba(30,58,138,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1424;--card:#172038;--ink:#e8ecf8;--mut:#9aa5c0;--line:#26304d;--pri:#6c8cff;--sh:none}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45}
+.hidden{display:none!important}
+input,select,button{font:inherit}input[type=date],input[type=number],input[type=time],select{width:100%;min-height:46px;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 5px}.hint{color:var(--mut);font-size:.85rem;margin:3px 0 8px}
+button{border:0;border-radius:14px;min-height:48px;padding:0 18px;font-weight:700;background:var(--pri);color:#fff;cursor:pointer}button.g{background:var(--line);color:var(--ink)}button.ok{background:var(--ok)}button.r{background:#d64545}button:active{transform:scale(.98)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* sihirbaz */
+#wiz{min-height:100%;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 0}
+.wh{background:linear-gradient(135deg,#1e3a8a,#2951d6);color:#fff;padding:22px 18px 26px;border-radius:0 0 26px 26px}.wh h1{font-size:1.4rem}.wh p{opacity:.9;font-size:.92rem}
+.dots{display:flex;gap:6px;margin-top:12px}.dots i{height:6px;flex:1;border-radius:4px;background:rgba(255,255,255,.3)}.dots i.on{background:#fff}
+.wb{flex:1;padding:16px 16px 100px;max-width:640px;width:100%;margin:0 auto}.wb h2{font-size:1.15rem;margin-bottom:2px}
+.wf{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);display:flex;gap:10px;max-width:640px;margin:0 auto}.wf button{flex:1}
+.drow{display:grid;grid-template-columns:86px 1fr;gap:8px;align-items:center;margin:8px 0}.drow .ie{grid-column:2;width:100%}
+.les{display:grid;grid-template-columns:1fr 128px;gap:8px;align-items:center;margin:8px 0;font-size:.88rem}.les select{min-height:42px;padding:4px 8px}
+.chip{font-size:.66rem;border-radius:99px;padding:1px 8px;color:#fff;margin-left:5px;white-space:nowrap}.c-n{background:#dc2626}.c-v{background:#059669}.c-m{background:#b45309}.c-o{background:#64748b}
+/* uygulama */
+#app{min-height:100%;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.ah{background:linear-gradient(135deg,#1e3a8a,#2951d6);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;display:flex;align-items:center;gap:14px;border-radius:0 0 22px 22px}
+.ah .t{flex:1}.ah h1{font-size:1.15rem}.ah p{font-size:.85rem;opacity:.9}
+.ring{width:56px;height:56px;position:relative}.ring svg{transform:rotate(-90deg)}.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.82rem}
+main{padding:12px;max-width:760px;margin:0 auto}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}.strip::-webkit-scrollbar{display:none}
+.chipd{flex:0 0 auto;min-width:54px;text-align:center;padding:7px 4px;border-radius:14px;background:var(--card);box-shadow:var(--sh);font-size:.78rem;cursor:pointer;border:2px solid transparent}.chipd b{display:block;font-size:1.05rem}.chipd.on{border-color:var(--pri);background:var(--pri);color:#fff}.chipd i{display:block;height:4px;border-radius:3px;background:var(--ok);margin:3px 6px 0;opacity:.85}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:14px;margin-bottom:12px}
+.it{display:flex;gap:10px;align-items:flex-start;background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px;margin-bottom:10px;border-left:5px solid #94a3b8}
+.k-tyt{border-color:#7c3aed}.k-okul{border-color:#2563eb}.k-meslek{border-color:#d97706}.k-tekrar{border-color:#eab308}.k-gun{border-color:#16a34a}.k-deneme{border-color:#ea580c}.k-analiz{border-color:#dc2626}.k-hafta{border-color:#6366f1}.k-ozel{border-color:#db2777}
+.chk{flex:0 0 44px;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;background:transparent;border:2.5px solid #b6bfd4;color:transparent;font-size:1.3rem}.done .chk{background:var(--ok);border-color:var(--ok);color:#fff}
+.bd{flex:1;min-width:0}.bd .top{font-size:.78rem;color:var(--mut);display:flex;justify-content:space-between;gap:6px}.bd h4{font-size:1rem;margin:2px 0 4px}.bd ul{margin-left:18px;font-size:.86rem;color:var(--mut)}.bd ul b{color:var(--ink)}
+.done .bd h4{text-decoration:line-through;opacity:.55}.done .bd ul{display:none}
+.more{flex:0 0 36px;background:transparent;color:var(--mut);min-height:36px;padding:0;font-size:1.3rem}
+.brk{text-align:center;color:var(--mut);font-size:.78rem;margin:-2px 0 8px}
+.warn{background:#fff4d6;color:#5b4300;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:.88rem}
+.empty{text-align:center;color:var(--mut);padding:30px 12px}
+.wk{display:flex;gap:10px;align-items:center;cursor:pointer}.wk .n{flex:0 0 52px;text-align:center}.wk .n b{font-size:1.2rem;display:block}.wk .m{flex:1;min-width:0;font-size:.82rem;color:var(--mut)}.wk .m span{display:inline-block;background:var(--bg);border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.cal>b{text-align:center;font-size:.72rem;color:var(--mut)}
+.cd{aspect-ratio:1/1.1;border-radius:11px;background:var(--card);box-shadow:var(--sh);font-size:.72rem;padding:3px;position:relative;cursor:pointer;border:2px solid transparent;overflow:hidden}.cd.sel{border-color:var(--pri)}.cd.off{opacity:.35}.cd b{font-size:.85rem}.cd i{position:absolute;left:0;right:0;bottom:0;background:var(--pri);opacity:.75}.cd s{position:absolute;right:3px;top:2px;text-decoration:none;font-size:.7rem}
+.nav{display:flex;align-items:center;gap:8px;margin-bottom:10px}.nav b{flex:1;text-align:center}.nav button{min-height:40px;padding:0 14px}
+.act{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);color:var(--ink);box-shadow:var(--sh);border-radius:16px;padding:12px 14px;margin-bottom:10px;min-height:60px}.act span{font-size:1.6rem}.act small{display:block;color:var(--mut);font-weight:500;font-size:.8rem}
+.pb{background:var(--line);border-radius:99px;height:9px;overflow:hidden}.pb i{display:block;height:100%;background:var(--pri)}
+table{width:100%;border-collapse:collapse;font-size:.88rem}td{padding:6px 4px;border-bottom:1px solid var(--line)}
+nav#nb{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:10}
+nav#nb button{flex:1;background:transparent;color:var(--mut);min-height:52px;font-size:.7rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;padding:0;border-radius:12px}nav#nb button span{font-size:1.35rem}nav#nb button.on{color:var(--pri);background:rgba(41,81,214,.1)}
+#sh{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}#sh>div{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+#sh h3{margin-bottom:6px}#sh .bt{display:flex;gap:8px;margin-top:14px}#sh .bt button{flex:1}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:99px;font-size:.88rem;z-index:30;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}#toast.on{opacity:1}
+#pr{display:none}
+@media print{body>*:not(#pr){display:none!important}#pr{display:block;font-size:11pt;color:#000;background:#fff}#pr h2{margin:10px 0 4px}#pr td{border:1px solid #999}}
+
+:root{--pri:#6d4aff;--pri2:#4c1d95}
+@media(prefers-color-scheme:dark){:root{--pri:#9a85ff}}
+.wh,.ah{background:linear-gradient(135deg,#4c1d95,#6d4aff)!important}
+.chk{border-color:#b6bfd4}.k-tyt{border-color:#7c3aed}.k-rutin{border-color:#0ea5e9}
+nav#nb button.on{background:rgba(109,74,255,.12)}
+.sub{background:var(--card);border-radius:16px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden}.sub>.sh{display:flex;gap:10px;align-items:center;padding:12px 14px;cursor:pointer}.sub>.sh b{flex:1}.sub .pb{width:90px}
+.tp{display:flex;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:.9rem;cursor:pointer}.tp i{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid #b6bfd4;text-align:center;font-style:normal;font-size:.85rem;line-height:22px}.tp.s1 i{background:#fbbf24;border-color:#fbbf24;color:#fff}.tp.s2 i{background:var(--ok);border-color:var(--ok);color:#fff}.tp span{flex:1}.tp.s2 span{color:var(--mut)}
+.kn label{display:flex;gap:8px;align-items:center;font-weight:500;font-size:.88rem;margin:0;padding:7px 4px}.kn input{width:22px;height:22px}
+.stat{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat div{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:10px;text-align:center}.stat b{display:block;font-size:1.4rem;color:var(--pri)}.stat small{color:var(--mut)}
+.lv{display:grid;grid-template-columns:1fr 84px 84px;gap:8px;align-items:center;margin:8px 0;font-size:.9rem}.lv input{min-height:42px;padding:4px 8px}
+.chd{display:flex;flex-wrap:wrap;gap:6px}.chd label{margin:0;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:600;display:flex;gap:6px;align-items:center;min-height:42px}.chd input{width:18px;height:18px}
+</style></head><body>
+<div id="wiz" class="hidden">
+ <div class="wh"><h1>TYT Çalışma Planlayıcı 🎯</h1><p>Net hedefine ve sınav tarihine göre sana özel plan.</p><div class="dots" id="dots"></div></div>
+ <div class="wb">
+  <section data-s="1"><h2>1. Takvim</h2><div class="hint">Plan, başlangıçtan sınav gününe kadar yapılır.</div>
+   <div class="row"><div><label>Başlangıç</label><input type="date" id="start"></div><div><label>Sınav tarihi</label><input type="date" id="exam" value="2027-06-19"></div></div>
+   <div class="hint">YKS 2027 tarihi ÖSYM tarafından henüz resmî olarak açıklanmadı; 19 Haziran 2027 tahmindir. Açıklanınca buradan değiştir.</div>
+   <label>Hangi günler çalışacaksın?</label><div class="chd" id="days"></div>
+   <label>Tamamen dinleneceğin gün</label><select id="free"><option value="0">Pazar</option><option value="6">Cumartesi</option><option value="-1">Yok</option></select></section>
+  <section data-s="2"><h2>2. Seviyen ve hedefin</h2><div class="hint">Son denemendeki netlerini yaz. Net = doğru − yanlış ÷ 4. Bilmiyorsan boş bırak: orta seviye kabul edilir. Hedefin ile arasındaki fark ne kadar büyükse o derse o kadar çok süre ayrılır.</div>
+   <div class="lv"><b></b><small>Şu an</small><small>Hedef</small></div><div id="lvs"></div></section>
+  <section data-s="3"><h2>3. Bildiğin konular</h2><div class="hint">Zaten iyi bildiğin konuları işaretle; plana girmezler (ama karma tekrarda yer alırlar). Emin değilsen işaretleme.</div><div id="kn" class="kn"></div></section>
+  <section data-s="4"><h2>4. Zamanın</h2><div class="hint">Gerçekçi ol: her gün yapabileceğin süreyi yaz.</div>
+   <div class="row"><div><label>Hafta içi (saat/gün)</label><input type="number" id="capW" value="3" min="0.5" max="8" step="0.5"></div><div><label>Hafta sonu (saat/gün)</label><input type="number" id="capE" value="5" min="0.5" max="10" step="0.5"></div></div>
+   <div class="row"><div><label>Hafta içi başlangıç</label><input type="time" id="tW" value="17:30"></div><div><label>Hafta sonu başlangıç</label><input type="time" id="tE" value="10:00"></div></div>
+   <div class="row"><div><label>Kalkış</label><input type="time" id="wake" value="06:45"></div><div><label>Yatış</label><input type="time" id="bed" value="22:45"></div></div><div class="hint" id="sleep"></div>
+   <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="rutin" checked style="width:22px;height:22px"> Her gün 15 dk "ısınma" sorusu ekle (paragraf / problem / geometri)</label></section>
+ </div>
+ <div class="wf"><button class="g" id="wb" onclick="wizGo(-1)">Geri</button><button id="wn" onclick="wizGo(1)">İleri</button></div>
+</div>
+<div id="app" class="hidden"><div class="ah"><div class="t"><h1 id="hg"></h1><p id="hd"></p></div><div class="ring" id="hr"></div></div><main id="out"></main><nav id="nb"></nav></div>
+<div id="sh" class="hidden" onclick="if(event.target===this)closeSheet()"><div id="shc"></div></div>
+<div id="toast"></div><div id="pr"></div><input type="file" id="rf" accept=".json,application/json" class="hidden">
+<script>
+const tytSubjects = {
+            "Türkçe": ["Sözcükte Anlam Özellikleri",  "Sözcükler Arası Anlam İlişkileri", "Söz Öbeklerinde Anlam", "Sözcükte Anlam - Sözel Mantık",  "Cümlede Anlam İlişkileri", "Cümle Yorumlama", "Cümle Oluşturma - Tamamlama", "Anlatımın Özellikleri", "Cümleler Arası Anlam İlişkileri", "Paragrafın Anlam Yönü", "Paragrafın Yapı Yönü", "Paragrafın Anlatım Yönü", "Paragrafta Akışı Bozan Cümleler", "Paragraf Tamamlama", "Paragrafı İkiye Bölme", "Paragrafta Yardımcı Düşünce", "Paragraf Çözümleme", "Çok Parçalı Sorular", "İsim (Ad)", "Zamir (Adıl)", "Sıfat (Ön Ad)", "Zarf (Belirteç)", "Edat (İlgeç)", "Bağlaç", "Ünlem", "Fiiller (Eylemler)", "Fiil Çatısı", "Fiillerde Kip - Kişi - Zaman", "Ek-Fiil (Ek-Eylem)", "Birleşik Zamanlı Fiiller", "Türkçenin Ses Özellikleri", "Büyük Ünlü Uyumu", "Küçük Ünlü Uyumu", "Ünsüz Benzeşmesi", "Ünsüz Yumuşaması", "Ses Olayları", "Yazım (İmla) Kuralları", "Noktalama İşaretleri", "Temel Ögeler", "Yardımcı Ögeler", "Ara Söz", "Cümlenin Ögeleri ile İlgili Uyarılar", "Yüklemin Türüne Göre Cümleler", "Yüklemin Yerine Göre Cümleler", "Anlamına Göre Cümleler", "Yapısına Göre Cümleler", "Anlamsal Bozukluklar", "Yapısal Bozukluklar"],
+            "Matematik": ["Temel Kavramlar (Sayılar)", "Rakam ve Sayı", "Sayı Doğrusu", "Tek ve Çift Sayılar", "Pozitif ve Negatif Sayılar", "Ardışık Sayılar", "Asal Sayılar", "Aralarında Asal Sayılar", "Sayı Basamakları ve Taban Aritmetiği", "Basamak Kavramı ve Çözümleme", "Taban Aritmetiği", "Taban Çevirme", "Bölme ve Bölünebilme Kuralları", "Bölme İşlemi, Bölünebilme", "Bölünebilme Kuralları (2, 3, 4, 5, 6, 7, 8, 9, 10, 11)", "Asal Çarpanlara Ayırma", "Obeb (EBOB) ve Okek (EKOK)", "Rasyonel Sayılar ve Ondalık Sayılar", "Rasyonel Sayılar ve Özellikleri", "Ondalık Sayılar", "Devirli Ondalık Sayılar", "Basit Eşitsizlikler ve Sıralama", "Gerçek Sayı Aralıkları", "Basit Eşitsizliklerin Özellikleri", "Sıralama Problemleri", "Mutlak Değer", "Mutlak Değer Kavramı ve Özellikleri", "Mutlak Değerli Denklemler", "Mutlak Değerli Eşitsizlikler", "Üslü Sayılar", "Üslü İfadeler ve Özellikleri", "Üslü Denklemler ve Sıralama", "Köklü Sayılar", "Köklü İfadeler ve Özellikleri", "Köklü Sayılarda Sıralama", "İç İçe Kökler", "Köklü Sayılarda Dört İşlem", "Çarpanlara Ayırma ve Özdeşlikler", "Ortak Çarpan Parantezine Alma", "Gruplandırarak Çarpanlara Ayırma", "Önemli Özdeşlikler (İki Kare Farkı, Tam Kare, İki Küp Toplamı/Farkı vb.)", "Oran ve Orantı", "Orantı Kavramı ve Özellikleri (Doğru, Ters, Bileşik Orantı)", "Aritmetik, Geometrik ve Harmonik Ortalama", "Denklem Çözme", "Birinci Dereceden Bir Bilinmeyenli Denklemler", "Birinci Dereceden İki Bilinmeyenli Denklem Sistemleri", "Problemler", "Sayı ve Kesir Problemleri", "Yaş Problemleri", "İşçi ve Havuz Problemleri", "Hareket (Hız) Problemleri", "Yüzde, Kâr-Zarar ve Faiz Problemleri", "Karışım Problemleri", "Grafik Problemleri", "Sayısal Mantık ve Günlük Hayat Problemleri", "Kümeler", "Küme Kavramı, Gösterimleri ve Temel Tanımlar", "Alt Küme ve Özellikleri", "Kümelerde İşlemler (Birleşim, Kesişim, Fark, Tümleme)", "Küme Problemleri ve Venn Şeması", "İki Kümenin Kartezyen Çarpımı", "Fonksiyonlar", "Fonksiyon Kavramı ve Tanımı", "Fonksiyon Türleri (Birebir, Örten, İçine, Birim, Sabit, Doğrusal Fonksiyon)", "Fonksiyonlarda Dört İşlem", "Bileşke Fonksiyon", "Ters Fonksiyon", "Permütasyon, Kombinasyon, Binom ve Olasılık", "Sayma Yöntemleri (Toplama ve Çarpma Yoluyla Sayma)", "Faktöriyel Kavramı", "Permütasyon (Sıralama, Diziliş)", "Kombinasyon (Seçme, Gruplama)", "Binom Açılımı", "Olasılık Kavramı ve Temel Olasılık Kuralları", "Koşullu Olasılık (TYT düzeyinde temel seviye)", "Veri, İstatistik ve Grafikler", "Merkezi Eğilim ve Yayılım Ölçüleri (Ortalama, Medyan, Mod, Açıklık)", "Verilerin Grafikle Gösterilimi (Sütun, Çizgi, Daire Grafiği)", "2. Dereceden Denklemler", "İkinci Dereceden Bir Bilinmeyenli Denklemler ve Çözüm Kümesi", "Kökler ile Katsayılar Arasındaki İlişkiler", "Karmaşık Sayılara Giriş (Temel Seviye)", "Polinomlar", "Polinom Kavramı ve Temel Tanımlar", "Polinomlarda Dört İşlem", "Polinomlarda Kalan Bulma Teoremleri", "Mantık", "Önermeler ve Bileşik Önermeler (Ve, Veya, Ya da, İse, Ancak ve Ancak)", "Totoloji ve Çelişki", "Açık Önermeler ve Niceleyiciler (Her, Bazı)"],
+            "Geometri": ["Doğruda Açı","Üçgende Açı - I","Üçgende Açı - II","Özel Üçgenler - I","Özel Üçgenler - II","Özel Üçgenler - III","Dik Üçgende Trigonometri","Açı Kenar Bağıntıları","Açıortay","Kenarortay","Üçgende Benzerlik - I","Üçgende Benzerlik - II","Üçgende Benzerlik - III","Üçgende Alan","Dörtgenler","Yamuk - I","Yamuk - II","Yamuk - III","Yamuk - IV","Paralelkenar - I","Paralelkenar - II","Paralelkenar - III","Eşkenar Dörtgen","Dikdörtgen - I","Dikdörtgen - II","Dikdörtgen - III","Kare","Deltoid","Çokgenler - I","Çokgenler - II","Çemberde Açı","Çemberde Uzunluk","Dairenin Çevresi ve Alanı - I","Dairenin Çevresi ve Alanı - II","Noktanın Analitik İncelenmesi","Doğrunun Analitik İncelenmesi - I","Doğrunun Analitik İncelenmesi - II","Katı Cisimler - I","Katı Cisimler - II","Katı Cisimler - III"],
+            "Fizik": ["Fiziğin Uğraş Alani Ve Fiziğin Alt Alanlari","Fiziksel Niceliklerin Siniflandirilmasi","Hareket Ve Hareketin Temel Kavramlari","Düzgün Doğrusal Hareket","Kuvvet","Newton Kanunlari","Sürtünme Kuvveti","Eğik Düzlem Ve Eylemsizlik","Iş Ve Güç","Enerji","Potansiyel Enerji","Sürtünme Ve Enerji Korunumu","Maddenin Ortak Özellikleri","özkütle","Dayaniklilik Ve Akişkanlar","Katilarin Basinci","Durgun Sivilarin Basinci","Bileşik Kaplar, açik Hava Ve Gaz Basinci","Sivilarin Kaldirma Kuvveti","Isi, Sicaklik Ve Isi Alişverişi","Hâl Değişimi","Genleşme","Elektriklenme","Elektriksel Kuvvet Ve Elektriksel Alan","Akim Şiddeti Ve Ohm Kanunu","Elektrik Devreleri","üreteclerin Bağlanmasi Ve Elektrik Enerjisi","Lambalar","Manyetizma","Gölge, Yansima Ve Aydinlanma","Düzlem Aynada Görüntü","Düzlem Aynada Görüş Alani","Küresel Aynalar","Kirilma Ve Renk","Mercekler","Dalga Hareketi","Yay Dalgalari","Su Dalgalari","Su Dalgalarinda Yansima Ve Kirilma","Deprem Ve Ses Dalgalari"],
+            "Kimya": ["Simyadan Kimyaya","Kimya Bilimi","Kimyanın Sembolik Dili","Güvenliğimiz ve Kimya","Atom Modelleri","Atom ve Yapısı","Katman Elektron Dizilimi","Periyodik Sistem","Elementleri Tanıyalım","Periyodik Özellikler","Kimyasal Türler ve Etkileşimler","Güçlü Etkileşimler","Bileşiklerin Adlandırılması","Zayıf Etkileşimler","Fiziksel ve Kimyasal Değişimler","Maddenin Fiziksel Hâlleri","Katılar","Sıvılar","Gazlar","Hâl Değişim Grafikleri","Su ve Hayat","Çevre Kimyası","Kimyanın Temel Kanunları","Mol Kavramı","Kimyasal Tepkime ve Denklemi","Tepkime Türleri","Kimyasal Hesaplamalar","Karışımların Sınıflandırılması","Çözünme Olayı ve Etkileşimler","Derişim Türleri","Koligatif Özellikler","Ayırma ve Saflaştırma Teknikleri","Asitler ve Bazlar","pH Kavramı ve İndikatörler","Asitler ve Bazların Tepkimeleri","Hayatımızda Asitler ve Bazlar","Tuzlar","Yaygın Günlük Hayat Kimyasalları","Geri Dönüşüm","Gıdalar"],
+            "Biyoloji": ["Bilimsel Yöntem","Canlıların Ortak Özellikleri - I","Canlıların Ortak Özellikleri - II","İnorganik Bileşikler","Karbonhidratlar","Yağlar (Lipitler)","Proteinler","Vitaminler","Enzimler","Nükleik Asitler","ATP, Organik Maddelerin Karşılaştırılması","Hücrenin Yapısı","Hücre Zarı ve Madde Geçişleri - I","Hücre Zarı ve Madde Geçişleri - II","Organeller - I","Organeller - II","Çekirdek, Hücre Organizasyonu","Sınıflandırma Çeşitleri - I","Sınıflandırma Çeşitleri - II","Arkebakteriler","Bakteriler","Protistler","Mantarlar","Bitkiler","Hayvanlar","Virüsler, Canlı Alemlerinin Biyolojik Sürece ve Ekonomiye Katkıları","Güncel Çevre Sorunları","Doğal Kaynaklar, Biyolojik Çeşitlilik","Hücre Döngüsü, Mitoz Bölünme","Eşeysiz Üreme","Mayoz Bölünme","Eşeyli Üreme","Genel Bilgiler, Mendel'in İlkeleri","Tam Baskınlık","Eş Baskınlık, Çok Alellik","Cinsiyete Bağlı Kalıtım","Soy Ağaçları, Genetik Çeşitliliğin Nedenleri","Ekosistem Ekolojisi","Ekosistemde Enerji Akışı","Madde Döngüleri"],
+            "Tarih": ["Tarih Bilimi Ve Tarihin Özellikleri", "Zaman Bilgisi - Takvimler Ve Tarihe Yardimci Bilimler", "Tarih Öncesi Devirler Ve Ilk Uygarliklar - Anadolu Uygarliklari Ve Diğer Medeniyetler", "Göçler - Coğrafya Ve Iklimin Etkileri, Siyasi Gücün Ve Hukuk Sisteminin Kaynaklari", "Orta Çağ'da Devlet Ve Toplum - Ekonomi - Askeri Organizasyonlar Ve Hukuk", "Türklerin Tarih Sahnesine Çikişi - Ilk Ve Orta Çağlarda Iç Asya'daki Türk Devletlerinin Güç Ve Yönetim Anlayişi", "Asya Hun Devleti - Kavimler Göçü Ve Avrupa Hun Devleti - Diğer Türk Devletleri Ve Topluluklari", "Islam Öncesi Arap Yarimadasi - Hazreti Mohammed Ve Dört Halife Dönemi", "Emeviler - Endülüs Emevileri Ve Abbaşiler", "Türklerin Islamlaşmasi - Karahanlilar - Gazneller - Büyük Selçuklular", "Türkiye Selçuklu Devleti-ilk Türk Beylikleri - Haçli Seferleri Ve Moğol Tehdidi", "Osmanli Devleti'nin Kuruluş Yillari Ve Beylikten Devlete Geçiş", "Devletlesme Sürecinde Savaşçilar Ve Askeri Yapi", "Devletlesme Sürecinde Osmanli Medeniyeti", "Istanbul'un Fethi - Islam Dünyasi Liderliği", "Osmanli'nin Gücü Ve Stratejik Rakipleri - Coğrafi Keşiflerin Etkileri", "Sultan Ve Osmanli Merkez Teşkilati", "Klasik Çağ'da Osmanli Toplum Düzeni", "1595 - 1700 Yillari Arasindaki Siyasi Gelişmeler - Avrupa'da Din Savaşlarindan Modern Devlete - Fetihlerden Savunmaya", "Avrupa'da Değişim Çaği - Osmanli Devleti'nde Değişim", "Osmanli Devletinde Isyanlar Ve Düzeni Koruma Çabalari", "Xviii - Xx. Yüzyil Siyasi Gelişmeleri (1774 - 1914), Osmanli - Rus Rekabeti (1768 - 1914)", "Ihtilaller Çaği", "Osmanli Devletinde Modern Orduya Geçiş - Xix. Yüzyilda Sosyal Hayattaki Değişimler - Osmanli'da Demokratiklesme Hareketleri", "El Emeğinden Makinelesmeye - Osmanli'da Sanayilesme Ve Ekonomiyi Düzeltme Çabalari", "Ulus Devlete Giden Süreçte Nüfus - Modern Hayattaki Sosyal Değişim", "Mustafa Kemal'in Hayati (1881 - 1919)", "Xx. Yüzyil Başlarinda Osmanli Devleti", "I. Dünya Savaşi'nda (1914 - 1918) Görülen Gelişmeler Ve Savaşin Sonuçlari - Mondros Mütarekesi Ve Sonraşindaki Gelişmeler", "Milli Mücadele'de Örgütlenme Dönemi Ve Amasya Genelgesi", "Erzurum, Sivas Ve Diğer Kongreler Dönemi, Amasya Görüşmeleri Ve Misak-i Milli", "Ilk Tbmm Dönemi (1920 - 1923) Ve Sevr Antlasmasi - Kurtuluş Savaşi'nda Cepheler - Sakarya Meydan Muharebesi'nden Lozan Antlasmasi'na", "Atatürkçü Düşünce Sistemi Ve Atatürk Ilkeleri", "Türk Inkilabi Ve Siyasi Alanda Yapilan Inkilaplar", "Eğitim, Toplum Ve Ekonomi Alaninda Yapilan Inkilaplar", "Iki Savaş Arasindaki Dönemde Türkiye Ve Dünya", "Ii. Dünya Savaşi Sürecinde Türkiye Ve Dünya", "Ii. Dünya Savaşi Sonrasinda Türkiye Ve Dünya", "Toplumsal Devrim Çağinda Dünya Ve Türkiye", "Xxi. Yüzyilin Eşiğinde Türkiye Ve Dünya"
+
+],
+            "Coğrafya": ["Insan - Doğa Ve Coğrafya", "Dünyanin Şekli Ve Sonuçlari", "Dünyanin Hareketleri", "Coğrafi Koordinat Sistemi Ve Konum", "Haritalarda Temel Kavramlar", "Haritalarda Uzunluk Ve Alan Hesaplamalari, Bilgilerin Haritaya Aktarilmasi, Haritaciliğin Tarihsel Gelişimi", "Haritalarda Yeryüzü Şekillerini Gösterme Yöntemleri", "Atmosfer, Hava Durumu Ve Iklim", "Iklim Elemanlari: Sicaklik", "Iklim Elemanlari: Basinç", "Iklim Elemanlari: Rüzgârlar", "Iklim Elemanlari: Nem Ve Yağiş", "Yeryüzündeki Iklim Tipleri", "Türkiye De Iklim", "Dünyanin Tektonik Oluşumu Ve Jeolojik Zamanlar", "Iç Kuvvetler", "Kayaçlar Ve Türkiye De Iç Kuvvetler", "Diş Kuvvetler: Akarsularin Oluşturduğu Yeryüzü Şekilleri", "Diş Kuvvetler: Rüzgârlarin Oluşturduğu Yeryüzü Şekilleri", "Diş Kuvvetler: Karstik Arazilerde Oluşan Ve Buzullarin Oluşturduğu Yeryüzü Şekilleri", "Diş Kuvvetler: Dalga Ve Akintilarin Oluşturduğu Yeryüzü Şekilleri, Kiyi Tipleri", "Türkiye'de Diş Kuvvetler Ve Başlica Yeryüzü Şekilleri", "Dünya'da Su Kaynaklari", "Türkiye'de Su Kaynaklari", "Dünya'da Topraklar", "Türkiye'de Topraklar Ve Topraklarin Kullanimi", "Dünya'da Bitkiler", "Türkiye'de Bitkiler Ve Bitkilerden Yararlanma", "Yerleşmelerin Gelişimi, Yerleşme Dokulari Ve Tipleri, Türkiye'de Yerleşmeler", "Nüfusun Özellikleri, Önemi, Dünya'da Nüfusun Tarihsel Gelişimi Ve Dağilişi", "Nüfus Piramitleri", "Türkiye'de Nüfus", "Göç Ve Göçlerin Nedenleri", "Türkiye'de Göçler", "Ekonomik Faaliyetler", "Bölge Ve Bölge Türleri, Bölge Sinirlari", "Dünya'da Ulaşim Ve Ulaşim Sistemleri (Kara, Demir, Hava Yollari Ve Boru Hatlari)", "Ulaşim Sistemleri (Deniz Yollari)", "Afetlerin Genel Özellikleri, Dağilişi Ve Afetlerden Korumma Yollari", "Türkiye'de Doğal Afetler"],
+            "Felsefe": ["Felsefenin Konusu ve Önemi", "Felsefenin Konusu ve Önemi-Felsefenin tanım", "Felsefenin Konusu ve Önemi-Felsefenin doğuşu ve tarihsel gelişimi", "Felsefenin Konusu ve Önemi-Felsefenin diğer bilimlerle ilişkisi", "Felsefenin Konusu ve Önemi-Felsefi düşünmenin özellikleri", "Bilgi Felsefesi (Epistemoloji)-Bilginin tanımı ve kaynağı", "Bilgi Felsefesi (Epistemoloji)-Doğru bilginin imkânı", "Bilgi Felsefesi (Epistemoloji)-Bilgi türleri (gündelik, bilimsel, felsefi, sanat bilgisi, dinî bilgi)", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Rasyonalizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Empirizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Kritisizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Pozitivizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Pragmatizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Entüisyonizm", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Fenomenoloji", "Bilgi Felsefesi (Epistemoloji)-Bilgi anlayışları-Analitik felsefe", "Varlık Felsefesi (Ontoloji)-Varlık kavramı", "Varlık Felsefesi (Ontoloji)-Varlık–yokluk ilişkisi", "Varlık Felsefesi (Ontoloji)-Varlığın türleri-Maddi varlık", "Varlık Felsefesi (Ontoloji)-Varlığın türleri-Tinsel varlık", "Varlık Felsefesi (Ontoloji)-Varlığın türleri-Nesnel–öznel varlık", "Varlık Felsefesi (Ontoloji)-Varlık anlayışları–Realizm", "Varlık Felsefesi (Ontoloji)-Varlık anlayışları–İdealizm", "Varlık Felsefese (Ontoloji)-Varlık anlayışları–Materyalizm", "Varlık Felsefesi (Ontoloji)-Varlık anlayışları–Dualizm", "Varlık Felsefesi (Ontoloji)-Varlık anlayışları–Monizm", "Varlık Felsefesi (Ontoloji)-Varlık anlayışları–Nihilizm", "Ahlak Felsefesi (Etik)-Ahlak ve etik arasındaki fark", "Ahlak Felsefesi (Etik)-İyi, kötü, doğru, yanlış kavramları", "Ahlak Felsefesi (Etik)-Özgürlük ve sorumluluk ilişkisi", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Hedonizm", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Epikürcülük", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Stoacılık", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Utilitarizm (Faydacılık)", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Kant'ın ödev ahlakı", "Ahlak Felsefesi (Etik)-Etik yaklaşımlar-Nietzsche'nin değer anlayışı", "Sanat Felsefesi (Estetik)-Sanatın tanımı ve amacı", "Sanat Felsefesi (Estetik)-Güzel kavramı", "Sanat Felsefese (Estetik)-Sanat eserinin değeri", "Sanat Felsefesi (Estetik)-Estetik yaklaşımlar-Mimesis (taklit)", "Sanat Felsefesi (Estetik)-Estetik yaklaşımlar-Yaratıcılık", "Sanat Felsefesi (Estetik)-Estetik yaklaşımlar-Duygusal dışavurum", "Din Felsefesi-Din felsefesinin konusu", "Din Felsefesi-Tanrı'nın varlığına ilişkin görüşler-Teizm", "Din Felsefesi-Tanrı'nın varlığına ilişkin görüşler-Ateizm", "Din Felsefesi-Tanrı'nın varlığına ilişkin görüşler-Agnostisizm", "Din Felsefesi-Tanrı'nın varlığına ilişkin görüşler-Deizm", "Din Felsefesi-Tanrı'nın varlığına ilişkin görüşler-Din–akıl ilişkisi", "Siyaset Felsefesi-Siyaset felsefesinin konusu", "Siyaset Felsefesi-Devletin ortaya çıkışı", "Siyaset Felsefesi-Devlet biçimleri (monarşi, demokrasi, aristokrasi vb.)", "Siyaset Felsefesi-Özgürlük, eşitlık, adalet kavramları", "Siyaset Felsefesi-Toplum sözleşmesi görüşleri (Hobbes, Locke, Rousseau)", "Bilim Felsefesi-Bilimin tanımı ve özellikleri", "Bilim Felsefesi-Bilimin yöntemleri (tümdengelim, tümevarım, deney–gözlem)", "Bilim Felsefesi-Bilim–teknoloji ilişkisi", "Bilim Felsefesi-Bilimin değeri ve sınırları", "Bilim Felsefesi-Bilim anlayışları-Pozitivizm", "Bilim Felsefesi-Bilim anlayışları-Falsifikasyon (Karl Popper)", "Bilim Felsefesi-Bilim anlayışları-Paradigma (Thomas Kuhn)", "20. Yüzyıl Felsefesi"],
+            "Din Kültürü": ["Bilgi ve İnanç", "İslam ve İbadetler", "Ahlak ve Değerler", "Allah İnancı", "Gençlik ve Değerler", "Güncel Dini Meseleler", "Hz. Muhammed (S.A.V.)", "Vahiy ve Akıl", "İslam Düşüncesinde Tasavvuf", "Yaşayan Dinler"]
+        };
+
+        // Ders türleri (Sayısal/Sözel)
+        const subjectType = {
+            "Matematik": "numeric",
+            "Geometri": "numeric", 
+            "Fizik": "numeric",
+            "Kimya": "numeric",
+            "Biyoloji": "numeric",
+            "Türkçe": "verbal",
+            "Tarih": "verbal",
+            "Coğrafya": "verbal",
+            "Felsefe": "verbal",
+            "Din Kültürü": "verbal"
+        };
+/* ===== Yardımcılar ===== */
+const $=i=>document.getElementById(i),pad=n=>String(n).padStart(2,'0'),toM=t=>{const a=t.split(':');return +a[0]*60+ +a[1]},toT=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,D0=s=>new Date(s+'T00:00'),fmt=d=>d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
+const GN=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],GS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+/* Saklama: yalnızca 'tytp_' ile başlayan anahtarlar. Sürüm değişirse eski veri otomatik silinir. */
+const VER=2,K={cfg:'tytp_cfg',done:'tytp_done',ov:'tytp_ov',tm:'tytp_tm',den:'tytp_den',ver:'tytp_ver',nb:'tytp_nb'};
+if(ls.get(K.ver)!==VER){Object.keys(localStorage).filter(k=>/^(tytp_|tyt2_)/.test(k)).forEach(k=>ls.del(k));ls.set(K.ver,VER)}
+const W={"Türkçe":40,"Matematik":30,"Geometri":10,"Fizik":7,"Kimya":7,"Biyoloji":6,"Tarih":5,"Coğrafya":5,"Felsefe":5,"Din Kültürü":5};
+const GRP={"Türkçe":"T","Matematik":"M","Geometri":"M","Fizik":"F","Kimya":"F","Biyoloji":"F","Tarih":"S","Coğrafya":"S","Felsefe":"S","Din Kültürü":"S"},MAXN={T:40,M:40,F:20,S:20},GNM={T:'Türkçe',M:'Matematik',F:'Fen Bilimleri',S:'Sosyal Bilimler'};
+const SUBJ=Object.keys(tytSubjects),HY=/Paragraf|Problem|Sözcükte Anlam|Cümlede Anlam|Üçgen|Temel Kavram|Rasyonel|Yazım|Noktalama/i;
+const HOL=[['2026-11-16','2026-11-20'],['2027-01-25','2027-02-05'],['2027-03-08','2027-03-12']],isHol=d=>{const s=iso(d);return HOL.some(h=>s>=h[0]&&s<=h[1])};
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+
+/* ===== PROGRAM MOTORU ===== */
+function buildPlan(c,TM){
+ const exam=D0(c.exam),start=D0(c.start),bed=toM(c.bed)-45;
+ const mul=g=>{const mx=MAXN[g],cu=c.cur[g]==null?mx*.5:c.cur[g],tg=c.tgt[g]==null?mx*.7:c.tgt[g];return clamp(.6+1.6*Math.max(0,tg-cu)/mx,.6,2.2)};
+ const Q={},ptr={},served={},pool={};
+ SUBJ.forEach(s=>{Q[s]=[];pool[s]=[];tytSubjects[s].forEach((t,i)=>{if(TM[s+'|'+i]===2)pool[s].push(i);else Q[s].push(i)});ptr[s]=0;served[s]=0});
+ const qT=SUBJ.reduce((a,s)=>a+W[s],0),nT=SUBJ.reduce((a,s)=>a+Q[s].length,0)||1,base={};
+ SUBJ.forEach(s=>base[s]=(.65*W[s]/qT+.35*Q[s].length/nT)*mul(GRP[s]));
+ const tot=SUBJ.reduce((a,s)=>a+base[s],0)||1,rq=[],days=[],cyc={};SUBJ.forEach(s=>cyc[s]=0);
+ let N=0,lastType=null,lastS=null,satN=0,rot=0;
+ const remaining=()=>SUBJ.filter(s=>ptr[s]<Q[s].length);
+ const wk=d=>{const x=new Date(d);x.setDate(x.getDate()-((x.getDay()+6)%7));return iso(x)};
+ for(let d=new Date(start);d<exam&&days.length<520;d.setDate(d.getDate()+1)){
+  const dow=d.getDay(),dd=new Date(d),we=dow===0||dow===6||isHol(d);
+  if(!c.days.includes(dow))continue;
+  const dte=Math.ceil((exam-d)/864e5),phase=dte<=2?'son':dte<=56?'deneme':remaining().length?'ogrenme':'pekistirme';
+  const ws=toM(we?c.tE:c.tW),cap=Math.round((we?c.capE:c.capW)*60),lunch=ws<780?90:0,M=Math.max(0,Math.min(cap,bed-ws-lunch)),its=[];let t=ws,rem=M;
+  const add=(kind,min,title,steps,x)=>{if(t<780&&ws<780&&t+min>780)t=870;if(t+min>bed)return false;its.push(Object.assign({kind,min,t0:toT(t),t1:toT(t+min),title,steps},x||{}));t+=min;return true};
+  const split=(L,a)=>{let u=0;return a.map((p,i)=>{const m=i===a.length-1?L-u:Math.round(L*p[0]);u+=m;return[m,p[1]]})};
+  if(dow===c.free||M<25){days.push({iso:iso(d),d:dd,dte,phase,its:[],M:0,free:dow===c.free,wk:wk(d)});continue}
+  if(phase==='son'){add('tekrar',Math.min(rem,120),'Hafif tekrar: yanlış defteri + formül/özet kartları',[[Math.min(rem,120),'Yeni konu çalışma. Yanlış defterine ve özet kartlarına bak, erken yat, sınav günü için hazırlan.']])}
+  else{
+   if(c.rutin&&rem>=45){const r=[['Paragraf','10 paragraf sorusu çöz (soru başı yaklaşık 1 dk)'],['Problem','5-8 problem sorusu çöz, çözüm yolunu 1 cümleyle yaz'],['Geometri','4-5 geometri sorusu çöz, şekli kendin çiz']][rot++%3];if(add('rutin',15,`Günün ısınması: ${r[0]}`,[[15,r[1]]]))rem-=15}
+   rq.filter(r=>r.due<=d).sort((a,b)=>a.due-b.due).slice(0,rem>=200?5:rem>=150?4:rem>=90?3:1).forEach(r=>{const mn=Math.min(12,4*r.items.length),f=r.items[0];if(rem>=45&&add('tekrar',mn,`Tekrar ${r.k}/${r.K}: ${f.s} – ${tytSubjects[f.s][f.i]}${r.items.length>1?' +'+(r.items.length-1)+' konu':''}`,r.items.map(x=>[Math.round(mn/r.items.length),`${x.s} – ${tytSubjects[x.s][x.i]}: önce kitapsız hatırla, sonra 2-3 soru çöz`]),{sj:f.s,ti:f.i})){rq.splice(rq.indexOf(r),1);rem-=mn}});
+   if(dow===6){satN++;const bs=[['Türkçe',40],['Matematik',40],['Fen Bilimleri',20],['Sosyal Bilimler',20]],b=bs[satN%4];
+    if(dte<=56&&rem>=205){add('deneme',165,'TYT Genel Deneme (120 soru, 165 dk)',[[165,'Gerçek sınav gibi: süre tut, telefon uzakta. Bitince netlerini Denemeler sekmesine gir.']]);add('analiz',40,'Deneme analizi',[[40,'Her yanlış ve boş soru için nedenini yaz: bilmiyordum / dikkat / süre']]);rem-=205}
+    else if(rem>=100&&(dte<=56||(dte<=150&&satN%2===0)||satN%4===0)){add('deneme',b[1]+5,`Branş denemesi: ${b[0]} (${b[1]} soru)`,[[b[1]+5,'Süre tutarak çöz. Bitince netini Denemeler sekmesine gir.']]);add('analiz',20,'Deneme analizi',[[20,'Yanlışları konuya göre işaretle; en çok yanlış yaptığın konuyu yaz']]);rem-=b[1]+25}
+    else if(rem>=110&&add('hafta',40,'Haftalık tekrar + yanlış defteri',[[40,'Bu haftanın yanlış defterini yeniden çöz; hâlâ yanlış yaptıklarını işaretle']]))rem-=40}
+   const used=new Set(),dayNew=[];let first=true;
+   while(rem>=30){
+    const n=Math.max(1,Math.floor((rem+10)/60)),L=Math.min(60,Math.floor((rem-10*(n-1))/n));if(L<30&&!(n===1&&rem>=30))break;
+    let learn=remaining().length>0&&(phase==='ogrenme'||(phase==='deneme'&&its.length%2===0)),P=learn?remaining():SUBJ.filter(s=>pool[s].length||ptr[s]>0);
+    if(learn&&lastType&&!P.some(x=>subjectType[x]!==lastType&&x!==lastS)){const o=SUBJ.filter(x=>subjectType[x]!==lastType&&x!==lastS&&(pool[x].length||ptr[x]>0));if(o.length){learn=false;P=o}}
+    if(!P.length)break;
+    const sc=x=>base[x]/tot*(N+1)-served[x]-(used.has(x)?2:0)-(x===lastS?5:0),opp=P.filter(x=>subjectType[x]!==lastType&&x!==lastS),same=P.filter(x=>x!==lastS),U=opp.length?opp:same.length?same:P,s=U.reduce((p,q)=>sc(q)>sc(p)?q:p);
+    if(!first&&!add('mola',10,'Mola',[]))break;let ok;
+    if(learn){const ti=Q[s][ptr[s]],tp=tytSubjects[s][ti],hy=HY.test(tp);
+     ok=add('tyt',L,`${hy?'⭐ ':''}${s} – ${tp}`,split(L,hy?[[.35,'Konuyu çalış: kendi cümlenle anlat, kısa özet kartı çıkar'],[.65,'Soru çöz (sık çıkan konu: bol soru), yanlışlarını işaretle']]:[[.45,'Konuyu çalış: kendi cümlenle anlat, kısa özet kartı çıkar'],[.55,'Soru çöz, yanlışlarını işaretle ve nedenini yaz']]),{sj:s,ti});
+     if(ok){ptr[s]++;pool[s].push(ti);dayNew.push({s,i:ti})}}
+    else{const all=pool[s].length?pool[s]:Q[s].slice(0,ptr[s]),ti=all[cyc[s]++%all.length];ok=add('karma',L,`Karma soru: ${s} – ${tytSubjects[s][ti]}`,[[L,'Süreli soru çöz; yanlışlarını yanlış defterine yaz']],{sj:s,ti,karma:1})}
+    if(!ok){if(!first)its.pop();break}
+    served[s]++;N++;lastType=subjectType[s];lastS=s;used.add(s);rem-=L;first=false;
+   }
+   if(dayNew.length){const g=clamp(Math.round(.1*dte),14,40),off=[1,7,g].filter(o=>o<dte-2);off.forEach((o,j)=>{const du=new Date(d);du.setDate(du.getDate()+o);rq.push({due:du,items:dayNew.slice(),k:j+1,K:off.length})})}
+  }
+  days.push({iso:iso(d),d:dd,dte,phase,its,M,free:false,wk:wk(d)});
+ }
+ return{days,Q,ptr,total:SUBJ.reduce((a,s)=>a+Q[s].length,0),sched:SUBJ.reduce((a,s)=>a+ptr[s],0)};
+}
+
+/* ===== Durum ===== */
+let CFG=null,PLAN=null,DONE=ls.get(K.done)||{},OV=ls.get(K.ov)||{},TM=ls.get(K.tm)||{},DEN=ls.get(K.den)||[],VIEW='bugun',CAL='hafta',SEL=iso(new Date()),STEP=1,DP=null,OPEN=null;
+const LAB={tyt:'🎯 TYT',rutin:'⚡ Isınma',tekrar:'🔁 Tekrar',karma:'🔀 Karma',deneme:'📝 Deneme',analiz:'🔍 Analiz',hafta:'🗂️ Hafta',ozel:'⭐ Benim',mola:'☕ Mola'};
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,ios=/iphone|ipad|ipod/i.test(navigator.userAgent),inApp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)/i.test(navigator.userAgent);
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();DP=e;if(PLAN)render()});
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2300)}
+const saveAll=()=>{ls.set(K.done,DONE);ls.set(K.ov,OV);ls.set(K.tm,TM);ls.set(K.den,DEN)};
+const closeSheet=()=>$('sh').classList.add('hidden'),sheet=h=>{$('shc').innerHTML=h;$('sh').classList.remove('hidden')};
+const byIso=s=>PLAN&&PLAN.days.find(x=>x.iso===s),monday=s=>{const d=D0(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return d},addDays=(s,n)=>{const d=D0(s);d.setDate(d.getDate()+n);return iso(d)};
+const INP='width:100%;min-height:46px;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)';
+function dayItems(day){const o=OV[day.iso]||{};
+ let a=day.its.filter(x=>x.kind==='mola'||!(o.del||[]).includes(x.title)).map(x=>{const m=(o.mod||{})[x.title];if(m&&x.kind!=='mola'){const mn=m.min||x.min;return Object.assign({},x,{orig:x.title,title:m.title||x.title,t0:m.t0||x.t0,min:mn,t1:toT(toM(m.t0||x.t0)+mn)})}return Object.assign({},x,{orig:x.title})});
+ (o.add||[]).forEach(x=>a.push({kind:'ozel',orig:x.title,title:x.title,t0:x.t0,min:x.min,t1:toT(toM(x.t0)+x.min),steps:[[x.min,x.note||'Kendi etkinliğim']]}));
+ a.sort((p,q)=>toM(p.t0)-toM(q.t0));return a.filter((x,i)=>x.kind!=='mola'||(i>0&&i<a.length-1&&a[i-1].kind!=='mola'&&a[i+1].kind!=='mola'))}
+const itKey=(day,x)=>day.iso+'|'+x.orig;
+function prog(day){const a=day?dayItems(day).filter(x=>x.kind!=='mola'):[],d=a.filter(x=>DONE[itKey(day,x)]).length;return{n:a.length,d,p:a.length?Math.round(d/a.length*100):0}}
+const ring=(p,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="3.5"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="${p*0.974} 100"/></svg>`;
+const tmDone=()=>Object.values(TM).filter(v=>v===2).length;
+/* ===== Görünümler ===== */
+function itHTML(day,x,i){if(x.kind==='mola')return`<div class="brk">☕ ${x.t0} · ${x.min} dk mola</div>`;const dn=DONE[itKey(day,x)];
+ return`<div class="it k-${x.kind}${dn?' done':''}"><button class="chk" onclick="tick(${i})" aria-label="Yaptım">✓</button><div class="bd"><div class="top"><span>${x.t0}–${x.t1} · ${x.min} dk</span><span>${LAB[x.kind]}</span></div><h4>${esc(x.title)}</h4><ul>${x.steps.map(s=>`<li><b>${s[0]} dk</b> ${esc(s[1])}</li>`).join('')}</ul></div><button class="more" onclick="editSheet(${i})" aria-label="Düzenle">⋯</button></div>`}
+function lateCount(){if(!PLAN)return 0;const td=iso(new Date());let n=0;PLAN.days.forEach(x=>{if(x.iso<td)dayItems(x).forEach(y=>{if(y.kind==='tyt'&&!DONE[itKey(x,y)]&&TM[y.sj+'|'+y.ti]!==2)n++})});return n}
+function dayBody(day){
+ if(!day)return'<div class="card empty">Bu gün planın dışında.</div>';
+ const its=dayItems(day),ph={ogrenme:'Öğrenme fazı',pekistirme:'Pekiştirme fazı',deneme:'Deneme fazı',son:'Son tekrar'}[day.phase];
+ let b=`<div class="hint" style="margin:0 4px 8px">${ph} · sınava ${day.dte} gün</div>`;
+ if(day.free)b+='<div class="card empty">🌿 <b>Dinlenme günü</b><br>Bugün ders çalışma. Dinlenmek de planın parçası.</div>';
+ else if(!its.length)b+='<div class="card empty">Bugün için çalışma yok. Gün çok dolu.</div>';
+ else b+=its.map((x,i)=>itHTML(day,x,i)).join('');
+ return b+`<button class="g" style="width:100%;margin-top:4px" onclick="addSheet()">＋ Kendi etkinliğimi ekle</button>`}
+function strip(){const m=monday(SEL);let h='<div class="strip">';for(let i=0;i<7;i++){const s=addDays(iso(m),i),x=byIso(s),p=prog(x);h+=`<div class="chipd${s===SEL?' on':''}" onclick="SEL='${s}';render()">${GS[i]}<b>${D0(s).getDate()}</b>${p.n?`<i style="width:${Math.max(8,p.p)}%"></i>`:''}</div>`}return h+'</div>'}
+function head(){const d=D0(SEL),p=prog(byIso(SEL)),hr=new Date().getHours();
+ $('hg').textContent=iso(new Date())===SEL?(hr<12?'Günaydın ☀️':hr<18?'Merhaba 👋':'İyi akşamlar 🌙'):GN[d.getDay()];
+ const dte=Math.ceil((D0(CFG.exam)-new Date())/864e5);$('hd').textContent=`Sınava ${dte} gün · ${p.n?p.d+'/'+p.n+' tamam':'plan yok'}`;$('hr').innerHTML=ring(p.p,56)+`<b>${p.p}%</b>`}
+function installCard(){if(standalone)return'<div class="act"><span>✅</span><div>Uygulama olarak açık<small>Ana ekranından açıyorsun.</small></div></div>';
+ let h=inApp?'<div class="warn">Bu uygulamanın içindeki tarayıcıda kurulum olmaz. Sağ üstteki ⋮ menüsünden <b>"Tarayıcıda aç"</b> de.</div>':'';
+ if(DP)return h+`<button class="act" onclick="DP.prompt();DP.userChoice.then(()=>{DP=null;render()})"><span>📲</span><div>Telefonuma kur<small>Ana ekrana uygulama gibi eklenir, internetsiz açılır.</small></div></button>`;
+ if(ios)return h+'<div class="card"><b>📲 iPhone\'a kur</b><ol style="margin:6px 0 0 20px;font-size:.9rem"><li>Safari\'de aç (Chrome değil).</li><li>Alttaki <b>Paylaş</b> ⬆️ düğmesine dokun.</li><li><b>"Ana Ekrana Ekle"</b> → <b>Ekle</b>.</li></ol></div>';
+ return h+'<div class="card"><b>📲 Telefona kur</b><div style="font-size:.9rem;margin-top:4px">Tarayıcı menüsünden (⋮) <b>"Uygulamayı yükle"</b> veya <b>"Ana ekrana ekle"</b> seçeneğine dokun.</div></div>'}
+function render(){
+ $('nb').innerHTML=[['bugun','🏠','Bugün'],['takvim','📅','Takvim'],['konular','📚','Konular'],['deneme','📈','Deneme'],['daha','⚙️','Daha']].map(a=>`<button class="${VIEW===a[0]?'on':''}" onclick="VIEW='${a[0]}';render();scrollTo(0,0)"><span>${a[1]}</span>${a[2]}</button>`).join('');
+ head();let h='';
+ if(VIEW==='bugun'){const lc=lateCount();h=(lc>0?`<div class="warn">⏳ Geride kalan <b>${lc}</b> TYT konusu var. <b><a href="#" onclick="replan();return false">Kaldığım yerden yeniden planla →</a></b></div>`:'')+strip()+dayBody(byIso(SEL))}
+ else if(VIEW==='takvim')h=calView();else if(VIEW==='konular')h=konuView();else if(VIEW==='deneme')h=denView();else if(VIEW==='daha')h=dahaView();else h='<button class="g" style="width:100%;margin-bottom:10px" onclick="VIEW=\'daha\';render()">← Geri</button>'+reportHTML();
+ $('out').innerHTML=h}
+function calView(){let h=`<div class="row" style="margin-bottom:10px"><button class="${CAL==='hafta'?'':'g'}" onclick="CAL='hafta';render()">Hafta</button><button class="${CAL==='ay'?'':'g'}" onclick="CAL='ay';render()">Ay</button></div>`;
+ if(CAL==='hafta'){const m=monday(SEL);let tm=0,dn=0,tt=0;h+=`<div class="nav"><button class="g" onclick="SEL=addDays(SEL,-7);render()">◀</button><b>${fmt(m)} haftası</b><button class="g" onclick="SEL=addDays(SEL,7);render()">▶</button></div>`;let w='';
+  for(let i=0;i<7;i++){const s=addDays(iso(m),i),x=byIso(s),p=prog(x),its=x?dayItems(x).filter(y=>y.kind!=='mola'):[];its.forEach(y=>tm+=y.min);dn+=p.d;tt+=p.n;
+   w+=`<div class="card wk" onclick="SEL='${s}';VIEW='bugun';render();scrollTo(0,0)"><div class="n">${GS[i]}<b>${D0(s).getDate()}</b></div><div class="m">${x?(x.free?'🌿 Dinlenme günü':its.length?its.map(y=>`<span>${esc(y.title.replace(/^(Günün ısınması: |Karma soru: )/,'').slice(0,28))}</span>`).join(''):'Çalışma yok'):'Plan dışı'}</div><div style="font-weight:700">${p.n?p.p+'%':''}</div></div>`}
+  h+=`<div class="card"><b>Bu hafta</b>: ${Math.round(tm/6)/10} saat · ${dn}/${tt} tamam<div class="pb" style="margin-top:8px"><i style="width:${tt?Math.round(dn/tt*100):0}%"></i></div></div>`+w}
+ else{const s=D0(SEL),f=new Date(s.getFullYear(),s.getMonth(),1),off=(f.getDay()+6)%7,mx=Math.max(1,...PLAN.days.map(x=>dayItems(x).reduce((a,y)=>a+(y.kind==='mola'?0:y.min),0)));
+  h+=`<div class="nav"><button class="g" onclick="SEL=iso(new Date(D0(SEL).getFullYear(),D0(SEL).getMonth()-1,1));render()">◀</button><b>${f.toLocaleDateString('tr-TR',{month:'long',year:'numeric'})}</b><button class="g" onclick="SEL=iso(new Date(D0(SEL).getFullYear(),D0(SEL).getMonth()+1,1));render()">▶</button></div><div class="cal">`+GS.map(x=>`<b>${x}</b>`).join('');
+  for(let i=0;i<off;i++)h+='<div></div>';
+  for(let d=new Date(f);d.getMonth()===f.getMonth();d.setDate(d.getDate()+1)){const x=byIso(iso(d)),m=x?dayItems(x).reduce((a,y)=>a+(y.kind==='mola'?0:y.min),0):0,p=prog(x),ic=x?(x.free?'🌿':x.its.some(y=>y.title.startsWith('TYT Genel'))?'🎯':x.its.some(y=>y.kind==='deneme')?'📝':p.n&&p.p===100?'✅':''):'';
+   h+=`<div class="cd${iso(d)===SEL?' sel':''}${x?'':' off'}" onclick="SEL='${iso(d)}';VIEW='bugun';render();scrollTo(0,0)"><b>${d.getDate()}</b><s>${ic}</s><i style="height:${Math.round(m/mx*38)}%"></i></div>`}
+  h+='</div><div class="hint" style="margin-top:8px">🎯 genel deneme · 📝 branş denemesi · 🌿 dinlenme · ✅ gün tamam. Çubuk = çalışma süresi.</div>'}
+ return h}
+function konuView(){const tt=SUBJ.reduce((a,s)=>a+tytSubjects[s].length,0),dn=tmDone();
+ let h=`<div class="card"><b>Genel ilerleme</b>: ${dn}/${tt} konu (%${Math.round(dn/tt*100)})<div class="pb" style="margin-top:8px"><i style="width:${Math.round(dn/tt*100)}%"></i></div><div class="hint" style="margin-top:8px">Konuya dokun: boş → 🟡 çalıştım → ✅ bitti. Bir konunun bloğunu "yaptım" yapınca otomatik ✅ olur. ⭐ = sık çıkan konu.</div></div>`;
+ SUBJ.forEach(s=>{const n=tytSubjects[s].length,d=tytSubjects[s].filter((t,i)=>TM[s+'|'+i]===2).length,op=OPEN===s;
+  h+=`<div class="sub"><div class="sh" onclick="OPEN=OPEN==='${s}'?null:'${s}';render()"><b>${s} <small style="color:var(--mut);font-weight:500">${d}/${n}</small></b><div class="pb"><i style="width:${Math.round(d/n*100)}%"></i></div><span>${op?'▲':'▼'}</span></div>`;
+  if(op)h+=tytSubjects[s].map((t,i)=>{const v=TM[s+'|'+i]||0;return`<div class="tp s${v}" onclick="cycleTM('${s}',${i})"><i>${v===2?'✓':v===1?'~':''}</i><span>${HY.test(t)?'⭐ ':''}${esc(t)}</span></div>`}).join('');
+  h+='</div>'});
+ return h}
+function cycleTM(s,i){const k=s+'|'+i,v=TM[k]||0;if(v===2)delete TM[k];else TM[k]=v+1;saveAll();const y=window.scrollY;render();scrollTo(0,y)}
+function denView(){
+ const sc=DEN.slice().sort((a,b)=>a.d<b.d?-1:1),tot=e=>e.T+e.M+e.F+e.S;
+ let h=`<div class="card"><b>Yeni deneme sonucu</b><div class="hint">Net = doğru − yanlış ÷ 4. Bilmediğin testi 0 bırakma, o satırı boş bırak.</div><label>Tarih</label><input type="date" id="dd" value="${iso(new Date())}">
+ <div class="row"><div><label>Türkçe (40)</label><input type="number" id="dT" step="0.25" min="0" max="40" inputmode="decimal"></div><div><label>Matematik (40)</label><input type="number" id="dM" step="0.25" min="0" max="40" inputmode="decimal"></div></div>
+ <div class="row"><div><label>Fen (20)</label><input type="number" id="dF" step="0.25" min="0" max="20" inputmode="decimal"></div><div><label>Sosyal (20)</label><input type="number" id="dS" step="0.25" min="0" max="20" inputmode="decimal"></div></div>
+ <button style="width:100%;margin-top:12px" onclick="addDen()">Kaydet</button></div>`;
+ if(sc.length){const W_=340,H_=140,n=sc.length,xs=i=>n===1?W_/2:20+i*(W_-40)/(n-1),ys=v=>H_-14-v/120*(H_-28),pts=sc.map((e,i)=>`${xs(i)},${ys(tot(e))}`).join(' '),tg=ys(CFG.tgt.T+CFG.tgt.M+CFG.tgt.F+CFG.tgt.S);
+  h+=`<div class="card"><b>Toplam net (120 üzerinden)</b><svg viewBox="0 0 ${W_} ${H_}" style="width:100%;margin-top:6px"><line x1="10" x2="${W_-10}" y1="${tg}" y2="${tg}" stroke="#12a36b" stroke-dasharray="5 4"/><text x="12" y="${tg-4}" font-size="10" fill="#12a36b">hedef ${CFG.tgt.T+CFG.tgt.M+CFG.tgt.F+CFG.tgt.S}</text><polyline fill="none" stroke="var(--pri)" stroke-width="3" points="${pts}"/>${sc.map((e,i)=>`<circle cx="${xs(i)}" cy="${ys(tot(e))}" r="4" fill="var(--pri)"/><text x="${xs(i)}" y="${ys(tot(e))-8}" font-size="11" text-anchor="middle" fill="currentColor">${tot(e).toFixed(1).replace('.0','')}</text>`).join('')}</svg></div>`;
+  const l=sc.slice(-2),av=g=>{const a=l.filter(e=>e[g]!=null);return a.length?a.reduce((x,e)=>x+e[g],0)/a.length:null};
+  h+=`<div class="card"><b>Testlere göre (son ${l.length} deneme ortalaması)</b>`+['T','M','F','S'].map(g=>{const a=av(g),tg=CFG.tgt[g];return`<div style="margin:10px 0;font-size:.88rem">${GNM[g]}: <b>${a==null?'–':a.toFixed(1)}</b> / hedef ${tg}<div class="pb"><i style="width:${a==null?0:Math.round(a/MAXN[g]*100)}%"></i></div></div>`}).join('')+`<button style="width:100%;margin-top:6px" onclick="useDen()">Bu netlere göre planı güncelle</button><div class="hint" style="margin-top:6px">Zayıf çıkan teste daha çok süre ayrılır. Yapılan konular ve işaretlerin korunur.</div></div>`;
+  h+='<div class="card"><b>Kayıtlar</b>'+sc.slice().reverse().map(e=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.88rem"><span>${fmt(D0(e.d))} · T${e.T??'–'} M${e.M??'–'} F${e.F??'–'} S${e.S??'–'}</span><a href="#" onclick="delDen('${e.id}');return false" style="color:#d64545">sil</a></div>`).join('')+'</div>'}
+ return h}
+function addDen(){const g=k=>{const v=$('d'+k).value;return v===''?null:Math.min(MAXN[k],Math.max(0,+v))},e={id:String(Date.now()),d:$('dd').value||iso(new Date()),T:g('T'),M:g('M'),F:g('F'),S:g('S')};
+ if(e.T==null&&e.M==null&&e.F==null&&e.S==null){toast('En az bir net yaz');return}
+ ['T','M','F','S'].forEach(k=>{if(e[k]==null)e[k]=0});DEN.push(e);saveAll();render();toast('Deneme kaydedildi')}
+function delDen(id){DEN=DEN.filter(e=>e.id!==id);saveAll();render()}
+function useDen(){const l=DEN.slice().sort((a,b)=>a.d<b.d?-1:1).slice(-2);['T','M','F','S'].forEach(g=>{CFG.cur[g]=Math.round(l.reduce((a,e)=>a+e[g],0)/l.length*4)/4});replan(true);toast('Plan netlerine göre güncellendi')}
+function dahaView(){const c=CFG,dn=tmDone();return`<div class="stat"><div><b>${Math.ceil((D0(c.exam)-new Date())/864e5)}</b><small>sınava gün</small></div><div><b>${dn}</b><small>biten konu</small></div></div><div style="height:12px"></div>
+ <button class="act" onclick="openWiz(1)"><span>✏️</span><div>Ayarları değiştir<small>Tarih, net hedefi, süre, günler. Plan yeniden oluşur.</small></div></button>
+ <button class="act" onclick="replan()"><span>🔄</span><div>Kaldığım yerden yeniden planla<small>Bugünden başlar; bitirdiğin konular tekrar gelmez.</small></div></button>
+ ${installCard()}
+ <button class="act" onclick="shotPNG('hafta')"><span>🖼️</span><div>Haftayı resim olarak kaydet<small>Galerine iner veya WhatsApp'a paylaşırsın.</small></div></button>
+ <button class="act" onclick="shotPNG('gun')"><span>📸</span><div>Bugünü resim olarak kaydet<small>Kilit ekranı duvar kâğıdı yapabilirsin.</small></div></button>
+ <button class="act" onclick="exportICS()"><span>🗓️</span><div>Takvime ekle (.ics)<small>Telefon takviminde her gün görünür.</small></div></button>
+ <button class="act" onclick="printWeek()"><span>🖨️</span><div>Yazdır / PDF<small>Bu haftanın tam programı.</small></div></button>
+ <button class="act" onclick="backup()"><span>⬇️</span><div>Yedek dosyası indir<small>Telefon değişirse veya veri silinirse geri yüklersin.</small></div></button>
+ <button class="act" onclick="$('rf').click()"><span>⬆️</span><div>Yedekten geri yükle<small>Daha önce indirdiğin yedek dosyası.</small></div></button>
+ <button class="act" onclick="VIEW='rapor';render()"><span>📊</span><div>Rapor ve yöntem<small>Program neden böyle? Neye dayanıyor?</small></div></button>
+ <button class="act" onclick="resetSheet()" style="color:#d64545"><span>🗑️</span><div>Sıfırla<small>İlerlemeyi, planı veya tüm verileri sil.</small></div></button>`}
+function reportHTML(){const P=PLAN,c=CFG,m={};let tm=0,nd=0,dt=0,dn=0;
+ P.days.forEach(x=>{const a=dayItems(x).filter(y=>y.kind!=='mola');if(a.length)nd++;a.forEach(y=>{const k=y.kind==='tyt'?'Yeni konu':y.kind==='deneme'||y.kind==='analiz'?'Deneme + analiz':y.kind==='rutin'?'Isınma soruları':'Tekrar ve diğer';m[k]=(m[k]||0)+y.min;tm+=y.min;dt++;if(DONE[itKey(x,y)])dn++})});
+ const sl=((toM(c.wake)+1440-toM(c.bed))%1440)/60,cov=P.total?Math.round(P.sched/P.total*100):100;
+ return`<div class="card"><b>Özet</b><table><tr><td>Çalışılan gün</td><td><b>${nd}</b>/${P.days.length}</td></tr><tr><td>Toplam planlı</td><td><b>${Math.round(tm/60)} saat</b></td></tr><tr><td>Tamamlanan</td><td><b>${dt?Math.round(dn/dt*100):0}%</b></td></tr><tr><td>Plana giren konu</td><td><b>${P.sched}</b>/${P.total} (%${cov})</td></tr><tr><td>Uyku</td><td><b>${sl.toFixed(1)} saat</b></td></tr></table>
+ ${cov<100?'<div class="warn">⚠️ Konuların hepsi bu sürede sığmıyor. Günlük süreyi artır veya bildiğin konuları işaretle.</div>':''}${sl<8?'<div class="warn">⚠️ Uykun 8 saatin altında. 13-18 yaş için 8-10 saat önerilir.</div>':''}
+ <div style="margin-top:10px"><b>Zaman nereye gidiyor?</b></div>${Object.keys(m).map(k=>`<div style="margin:8px 0;font-size:.88rem">${k} · ${Math.round(m[k]/60)} sa<div class="pb"><i style="width:${Math.round(m[k]/tm*100)}%"></i></div></div>`).join('')}</div>
+ <div class="card"><b>Bu program neye dayanıyor?</b><ul style="margin:6px 0 0 18px;font-size:.86rem"><li><b>TYT yapısı:</b> 120 soru / 165 dk: Türkçe 40, Matematik 30, Geometri 10, Fizik 7, Kimya 7, Biyoloji 6, Tarih/Coğrafya/Felsefe/Din 5'er. YKS 2027 tarihi resmî değil; 19 Haziran 2027 tahmin.</li><li><b>Süre dağılımı:</b> %65 soru payı + %35 konu yoğunluğu, hedef net ile şimdiki net arasındaki farka göre artar (zayıf teste daha çok süre).</li><li><b>Sık çıkan konular (⭐):</b> ÖSYM konu bazlı dağılımı resmen açıklamaz; paragraf, anlam bilgisi, problemler ve üçgenler çıkmış soru sayımlarına göre en sık çıkan konulardır. Bu yüzden bu konularda soru çözme payı artırıldı ve her gün 15 dk ısınma sorusu eklendi.</li><li><b>Aralıklı tekrar:</b> Konular ertesi gün, 7. günde ve sonra sınava kalan sürenin yaklaşık %10'u kadar (en az 14 gün) sonra tekrar gelir; aynı gün çalışılan konular tek tekrar bloğunda toplanır. Araştırmada en uygun aralık, hatırlanacak süre uzadıkça kısalan bir orandır (haftalık sınavda %20-40, yıllık sınavda %5-10; Cepeda vd., 2008).</li><li><b>Soru çözme ve tekrar:</b> Pratik test ve aralıklı tekrar yüksek, sadece yeniden okuma düşük etkilidir (Dunlosky vd., 2013).</li><li><b>Sayısal-sözel dönüşümü</b> karma pratik sağlar.</li><li><b>Deneme:</b> Sınava 8 hafta kala her hafta genel deneme, öncesinde branş denemeleri. Her denemeden sonra analiz bloğu vardır.</li><li><b>Uyku:</b> 13-18 yaş için 8-10 saat (AASM, 2016).</li><li>Günlük süre sınırları araştırma değil, pratik varsayılandır.</li><li>Bilgilerin yalnızca bu telefonda saklanır, hiçbir yere gönderilmez.</li></ul></div>`}
+/* ===== İşaretleme ve düzenleme ===== */
+function tick(i){const day=byIso(SEL),x=dayItems(day)[i],k=itKey(day,x),on=!DONE[k];
+ if(on)DONE[k]=1;else delete DONE[k];
+ if(x.kind==='tyt'&&x.sj!=null){const tk=x.sj+'|'+x.ti;if(on)TM[tk]=2;else if(TM[tk]===2)delete TM[tk]}
+ saveAll();const p=prog(day);render();if(on&&p.n&&p.p===100)toast('Bugünkü planı bitirdin 🎉 Tebrikler!')}
+function editSheet(i){const day=byIso(SEL),x=dayItems(day)[i];
+ sheet(`<h3>${esc(x.title)}</h3><label>Başlık</label><input id="e1" value="${esc(x.title)}" style="${INP}"><div class="row"><div><label>Başlama saati</label><input type="time" id="e2" value="${x.t0}"></div><div><label>Süre (dk)</label><input type="number" id="e3" value="${x.min}" min="5" max="240" step="5"></div></div><div class="bt"><button class="r" onclick="delItem(${i})">Sil</button><button class="g" onclick="moveTomorrow(${i})">Yarına taşı</button></div><div class="bt"><button class="g" onclick="closeSheet()">Vazgeç</button><button onclick="saveItem(${i})">Kaydet</button></div>`)}
+const ovd=s=>OV[s]=OV[s]||{};
+function saveItem(i){const day=byIso(SEL),x=dayItems(day)[i],o=ovd(day.iso),t=$('e1').value.trim()||x.title,t0=$('e2').value||x.t0,mn=+$('e3').value||x.min;
+ if(x.kind==='ozel'){const a=(o.add||[]).findIndex(y=>y.title===x.orig&&y.t0===x.t0);if(a>=0)o.add[a]={title:t,t0,min:mn,note:o.add[a].note}}else{o.mod=o.mod||{};o.mod[x.orig]={title:t,t0,min:mn}}
+ saveAll();closeSheet();render();toast('Kaydedildi')}
+function delItem(i){const day=byIso(SEL),x=dayItems(day)[i],o=ovd(day.iso);if(x.kind==='ozel')o.add=(o.add||[]).filter(y=>!(y.title===x.orig&&y.t0===x.t0));else{o.del=o.del||[];o.del.push(x.orig)}saveAll();closeSheet();render();toast('Silindi')}
+function moveTomorrow(i){const day=byIso(SEL),x=dayItems(day)[i],o2=ovd(addDays(day.iso,1));o2.add=o2.add||[];o2.add.push({title:x.title,t0:x.t0,min:x.min,note:x.steps.map(s=>s[1]).join(' · ').slice(0,200)});delItem(i);toast('Yarına taşındı')}
+function addSheet(){sheet(`<h3>Kendi etkinliğim</h3><div class="hint">Okul ödevi, kurs, spor… ne istersen ekle.</div><label>Ne yapacaksın?</label><input id="a1" placeholder="Örn. Fizik ödevi" style="${INP}"><div class="row"><div><label>Saat</label><input type="time" id="a2" value="20:00"></div><div><label>Süre (dk)</label><input type="number" id="a3" value="30" min="5" max="240" step="5"></div></div><div class="bt"><button class="g" onclick="closeSheet()">Vazgeç</button><button onclick="addItem()">Ekle</button></div>`)}
+function addItem(){const t=$('a1').value.trim();if(!t){toast('Bir ad yaz');return}const o=ovd(SEL);o.add=o.add||[];o.add.push({title:t,t0:$('a2').value||'20:00',min:+$('a3').value||30});saveAll();closeSheet();render();toast('Eklendi')}
+/* ===== Kaydetme ===== */
+async function shotPNG(sc){const days=sc==='hafta'?[0,1,2,3,4,5,6].map(i=>byIso(addDays(iso(monday(SEL)),i))):[byIso(SEL)],rows=[];
+ days.forEach(x=>{if(!x)return;rows.push(['h',`${GN[x.d.getDay()]} ${fmt(x.d)}`]);const a=dayItems(x).filter(y=>y.kind!=='mola');if(x.free)rows.push(['t','🌿 Dinlenme günü']);else if(!a.length)rows.push(['t','Çalışma yok']);a.forEach(y=>rows.push([DONE[itKey(x,y)]?'d':'i',`${y.t0}  ${y.title} (${y.min} dk)`]))});
+ const W_=1080,P=48,H_=190+rows.reduce((a,r)=>a+(r[0]==='h'?78:54),0)+40,cv=document.createElement('canvas');cv.width=W_;cv.height=H_;const g=cv.getContext('2d');
+ g.fillStyle='#f3f5fb';g.fillRect(0,0,W_,H_);const gr=g.createLinearGradient(0,0,W_,0);gr.addColorStop(0,'#4c1d95');gr.addColorStop(1,'#6d4aff');g.fillStyle=gr;g.fillRect(0,0,W_,150);
+ g.fillStyle='#fff';g.font='bold 52px system-ui,sans-serif';g.fillText('TYT Çalışma Planım',P,72);g.font='30px system-ui,sans-serif';g.fillText(sc==='hafta'?fmt(monday(SEL))+' haftası':fmt(D0(SEL)),P,118);
+ let y=190;rows.forEach(r=>{if(r[0]==='h'){y+=30;g.fillStyle='#4c1d95';g.font='bold 38px system-ui,sans-serif';g.fillText(r[1],P,y+18);y+=48}else{g.font='32px system-ui,sans-serif';g.fillStyle=r[0]==='d'?'#9aa5c0':'#1b2437';const pf=r[0]==='d'?'✓ ':'';let t=pf+r[1];while(g.measureText(t).width>W_-2*P&&t.length>4)t=t.slice(0,-2);if(t!==pf+r[1])t+='…';g.fillText(t,P,y+16);y+=54}});
+ cv.toBlob(async b=>{const f=new File([b],'tyt_planim.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'TYT Planım'});return}catch(e){if(e.name==='AbortError')return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tyt_planim.png';a.click();toast('Resim indirildi')})}
+function printWeek(){const m=monday(SEL);let h=`<h2>TYT Çalışma Planım · ${fmt(m)} haftası</h2>`;for(let i=0;i<7;i++){const x=byIso(addDays(iso(m),i));if(!x)continue;const a=dayItems(x).filter(y=>y.kind!=='mola');h+=`<h2>${GN[x.d.getDay()]} ${fmt(x.d)}</h2><table>`+(x.free?'<tr><td>Dinlenme günü</td></tr>':a.map(y=>`<tr><td style="width:90px">${y.t0}–${y.t1}</td><td><b>${esc(y.title)}</b><br>${y.steps.map(s=>s[0]+' dk: '+esc(s[1])).join('<br>')}</td><td style="width:24px">☐</td></tr>`).join('')||'<tr><td>Çalışma yok</td></tr>')+'</table>'}$('pr').innerHTML=h;print()}
+function exportICS(){const z=(s,t)=>s.replace(/-/g,'')+'T'+t.replace(':','')+'00',cl=s=>String(s).replace(/[,;\\]/g,' ');let o='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TYT Planlayici//TR\r\n';
+ PLAN.days.forEach(x=>{const b=dayItems(x);if(!b.length)return;o+=`BEGIN:VEVENT\r\nUID:tyt-${x.iso}@planlayici\r\nDTSTAMP:${z(iso(new Date()),'00:00')}\r\nDTSTART:${z(x.iso,b[0].t0)}\r\nDTEND:${z(x.iso,b[b.length-1].t1)}\r\nSUMMARY:TYT çalışma\r\nDESCRIPTION:${b.filter(y=>y.kind!=='mola').map(y=>cl(y.t0+' '+y.title)).join('\\n')}\r\nEND:VEVENT\r\n`});
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o+'END:VCALENDAR'],{type:'text/calendar'}));a.download='tyt_planim.ics';a.click()}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({v:VER,cfg:CFG,done:DONE,ov:OV,tm:TM,den:DEN})],{type:'application/json'}));a.download='tyt_yedek.json';a.click();toast('Yedek indirildi')}
+$('rf').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.cfg)throw 0;ls.set(K.cfg,d.cfg);ls.set(K.done,d.done||{});ls.set(K.ov,d.ov||{});ls.set(K.tm,d.tm||{});ls.set(K.den,d.den||[]);location.reload()}catch(x){toast('Bu dosya geçerli bir yedek değil')}})};
+/* ===== SIFIRLAMA ===== */
+function resetSheet(){sheet(`<h3>🗑️ Sıfırla</h3><div class="hint">Ne silmek istiyorsun?</div>
+ <button class="act" onclick="askReset('prog')"><span>↩️</span><div>İlerlemeyi sıfırla<small>"Yaptım" işaretleri, konu durumları ve düzenlemelerin silinir. Ayarlar ve denemeler kalır.</small></div></button>
+ <button class="act" onclick="askReset('plan')"><span>🆕</span><div>Planı baştan kur<small>Ayarlar ve ilerleme silinir, sihirbaz açılır. Deneme kayıtların kalır.</small></div></button>
+ <button class="act" onclick="askReset('all')" style="color:#d64545"><span>🧨</span><div>Her şeyi sil<small>Bu uygulamanın telefondaki tüm verisi silinir (denemeler dahil).</small></div></button><div class="bt"><button class="g" onclick="closeSheet()">Vazgeç</button></div>`)}
+function askReset(t){const m={prog:'İlerleme ve düzenlemelerin silinecek.',plan:'Ayarlar ve ilerleme silinecek, plan baştan kurulacak.',all:'Bu uygulamaya ait TÜM veriler silinecek. Geri alınamaz.'}[t];
+ sheet(`<h3>Emin misin?</h3><div class="hint" style="font-size:.95rem">${m}</div><div class="bt"><button class="g" onclick="closeSheet()">Vazgeç</button><button class="r" onclick="doReset('${t}')">Evet, sil</button></div>`)}
+function doReset(t){
+ const rm=a=>a.forEach(k=>ls.del(k));
+ if(t==='prog'){rm([K.done,K.ov,K.tm])}
+ else if(t==='plan'){rm([K.cfg,K.done,K.ov,K.tm,K.nb])}
+ else{Object.keys(localStorage).filter(k=>/^(tytp_|tyt2_)/.test(k)).forEach(k=>ls.del(k));try{sessionStorage.clear()}catch(e){}
+  if(window.caches)caches.keys().then(ks=>ks.filter(k=>k.startsWith('tytpro-')).forEach(k=>caches.delete(k)));
+  if(navigator.serviceWorker)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()))}
+ setTimeout(()=>location.reload(),t==='all'?300:0)}
+/* ===== Sihirbaz ===== */
+function fillWiz(c){
+ const sv=c||{};$('start').value=sv.start||iso(new Date());$('exam').value=sv.exam||'2027-06-19';
+ $('days').innerHTML=[1,2,3,4,5,6,0].map((v,i)=>`<label><input type="checkbox" value="${v}" ${(sv.days?sv.days.includes(v):true)?'checked':''}>${GS[i]}</label>`).join('');
+ $('free').value=sv.free!=null?sv.free:0;
+ $('lvs').innerHTML=['T','M','F','S'].map(g=>`<div class="lv"><b>${GNM[g]} <small style="color:var(--mut);font-weight:500">/${MAXN[g]}</small></b><input type="number" id="cu${g}" min="0" max="${MAXN[g]}" step="0.25" inputmode="decimal" placeholder="?" value="${sv.cur&&sv.cur[g]!=null?sv.cur[g]:''}"><input type="number" id="tg${g}" min="0" max="${MAXN[g]}" step="0.5" inputmode="decimal" value="${sv.tgt?sv.tgt[g]:Math.round(MAXN[g]*.7)}"></div>`).join('');
+ $('kn').innerHTML=SUBJ.map(s=>`<details><summary style="padding:10px 4px;font-weight:700;cursor:pointer">${s} <small style="color:var(--mut);font-weight:500">(${tytSubjects[s].length} konu)</small></summary><div><button class="g" style="min-height:36px;padding:0 12px;font-size:.8rem" onclick="knAll('${s}',true)">Tümü</button> <button class="g" style="min-height:36px;padding:0 12px;font-size:.8rem" onclick="knAll('${s}',false)">Hiçbiri</button>${tytSubjects[s].map((t,i)=>`<label><input type="checkbox" data-k="${s}|${i}" ${TM[s+'|'+i]===2?'checked':''}>${HY.test(t)?'⭐ ':''}${esc(t)}</label>`).join('')}</div></details>`).join('');
+ $('wake').value=sv.wake||'06:45';$('bed').value=sv.bed||'22:45';$('capW').value=sv.capW||3;$('capE').value=sv.capE||5;$('tW').value=sv.tW||'17:30';$('tE').value=sv.tE||'10:00';$('rutin').checked=sv.rutin!==false;sleepInfo()}
+function knAll(s,v){document.querySelectorAll(`#kn input[data-k^="${s}|"]`).forEach(e=>e.checked=v)}
+function sleepInfo(){const s=((toM($('wake').value)+1440-toM($('bed').value))%1440)/60;$('sleep').innerHTML=`Uyku süren: <b>${s.toFixed(1)} saat</b> ${s<8?'⚠️ (8-10 saat önerilir)':'✓'}`}
+function readCfg(){const num=id=>{const v=$(id).value;return v===''?null:+v},cur={},tgt={};['T','M','F','S'].forEach(g=>{cur[g]=num('cu'+g);tgt[g]=num('tg'+g)==null?Math.round(MAXN[g]*.7):Math.min(MAXN[g],num('tg'+g));if(cur[g]!=null)cur[g]=Math.min(MAXN[g],cur[g])});
+ return{start:$('start').value||iso(new Date()),exam:$('exam').value,days:[...document.querySelectorAll('#days input:checked')].map(x=>+x.value),free:+$('free').value,cur,tgt,wake:$('wake').value,bed:$('bed').value,capW:+$('capW').value||1,capE:+$('capE').value||2,tW:$('tW').value||'17:30',tE:$('tE').value||'10:00',rutin:$('rutin').checked}}
+function openWiz(s){STEP=s;if(CFG)fillWiz(CFG);$('app').classList.add('hidden');$('wiz').classList.remove('hidden');wizShow()}
+function wizShow(){document.querySelectorAll('.wb section').forEach(s=>s.classList.toggle('hidden',+s.dataset.s!==STEP));$('dots').innerHTML=[1,2,3,4].map(i=>`<i class="${i<=STEP?'on':''}"></i>`).join('');$('wb').style.visibility=STEP===1&&!CFG?'hidden':'visible';$('wn').textContent=STEP===4?'Planımı oluştur ✨':'İleri';scrollTo(0,0)}
+function wizGo(d){if(STEP+d<1){if(CFG){$('wiz').classList.add('hidden');$('app').classList.remove('hidden')}return}
+ if(STEP===1&&d>0){if(!$('exam').value||$('exam').value<=$('start').value){toast('Sınav tarihi başlangıçtan sonra olmalı');return}if(!document.querySelectorAll('#days input:checked').length){toast('En az bir gün seç');return}}
+ if(STEP+d>4){generate();return}STEP+=d;wizShow()}
+function generate(){CFG=readCfg();document.querySelectorAll('#kn input[data-k]').forEach(e=>{if(e.checked)TM[e.dataset.k]=2;else if(TM[e.dataset.k]===2)delete TM[e.dataset.k]});
+ ls.set(K.cfg,CFG);saveAll();PLAN=buildPlan(CFG,TM);if(!byIso(SEL))SEL=CFG.start;VIEW='bugun';$('wiz').classList.add('hidden');$('app').classList.remove('hidden');render();scrollTo(0,0);try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}
+function replan(quiet){const td=iso(new Date());CFG.start=td>CFG.start?td:CFG.start;ls.set(K.cfg,CFG);PLAN=buildPlan(CFG,TM);SEL=byIso(td)?td:CFG.start;render();if(!quiet)toast('Plan bugünden yeniden oluşturuldu')}
+function init(){
+ const sv=ls.get(K.cfg);fillWiz(sv);$('wake').onchange=$('bed').onchange=sleepInfo;
+ if(sv){CFG=sv;PLAN=buildPlan(sv,TM);if(!byIso(SEL))SEL=PLAN.days.length?PLAN.days[0].iso:sv.start;$('app').classList.remove('hidden');render()}else openWiz(1);
+ if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+document.addEventListener('DOMContentLoaded',init);
+</script></body></html>
